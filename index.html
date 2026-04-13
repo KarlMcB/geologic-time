@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geologic Time — 120-Foot Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #050d1a;
+  --ochre:       #c8882a;
+  --rust:        #a84428;
+  --cream:       #f5e8cc;
+  --slate:       #7a8e9a;
+  --gold:        #e8b830;
+  --green-life:  #4a7a32;
+  --blue-water:  #2a6080;
+  --red-extinct: #b82820;
+  --warm-stone:  #8b6040;
+  --fd: 'Playfair Display', Georgia, serif;
+  --fb: 'Crimson Pro', Georgia, serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--cream);font-family:var(--fb);overflow-x:hidden}
+
+/* STARFIELD */
+#starfield{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d,3s) ease-in-out infinite;opacity:var(--o,.5)}
+@keyframes twinkle{0%,100%{opacity:var(--o,.5)}50%{opacity:calc(var(--o,.5)*0.12)}}
+
+/* ERA BG */
+#era-bg{position:fixed;inset:0;z-index:1;pointer-events:none;transition:background 2.5s ease;opacity:.20}
+
+/* TIMELINE */
+#timeline{position:relative;width:100%;height:361500px;z-index:10}
+
+/* SPINE */
+#spine{
+  position:absolute;left:50%;top:0;bottom:0;width:3px;
+  transform:translateX(-50%);
+  background:linear-gradient(to bottom,transparent 0%,#3a2808 .3%,var(--ochre) 5%,var(--rust) 30%,var(--warm-stone) 60%,var(--green-life) 85%,var(--gold) 99%,transparent 100%);
+  opacity:.65
+}
+.spine-dot{
+  position:absolute;left:50%;transform:translateX(-50%);
+  width:14px;height:14px;border-radius:50%;border:2px solid;background:var(--bg);z-index:20
+}
+
+/* HERO */
+#hero{
+  position:absolute;top:0;left:0;right:0;height:580px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:2rem;z-index:15
+}
+#hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(200,136,42,.13) 0%,transparent 70%)}
+.hero-sub{font-size:.9rem;letter-spacing:.38em;text-transform:uppercase;color:var(--ochre);margin-bottom:1.2rem}
+.hero-title{font-family:var(--fd);font-size:clamp(3rem,8vw,6.5rem);font-weight:900;line-height:1;color:var(--cream);text-shadow:0 0 80px rgba(200,136,42,.35)}
+.hero-title em{font-style:italic;color:var(--gold)}
+.hero-desc{font-size:1.1rem;font-weight:300;color:rgba(245,232,204,.72);max-width:540px;line-height:1.75;margin:1.4rem auto 0}
+.hero-scale{margin-top:1.8rem;padding:.55rem 1.5rem;border:1px solid rgba(200,136,42,.35);border-radius:2px;font-size:.82rem;letter-spacing:.12em;color:var(--ochre)}
+.scroll-cue{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  color:rgba(245,232,204,.42);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+  animation:bounce 2.5s ease-in-out infinite
+}
+.scroll-cue::after{content:'';width:1px;height:44px;background:linear-gradient(to bottom,rgba(200,136,42,.55),transparent)}
+@keyframes bounce{0%,100%{opacity:.42;transform:translateX(-50%) translateY(0)}50%{opacity:1;transform:translateX(-50%) translateY(7px)}}
+
+/* EVENT CARDS */
+.event{position:absolute;left:50%;width:400px;z-index:15}
+.event.left {transform:translateX(calc(-100% - 36px))}
+.event.right{transform:translateX(36px)}
+.event-inner{
+  background:linear-gradient(135deg,rgba(20,10,2,.97) 0%,rgba(38,18,6,.93) 100%);
+  border:1px solid;border-radius:3px;padding:1.25rem 1.5rem 1.1rem;
+  position:relative;backdrop-filter:blur(6px);
+  opacity:0;transform:translateX(-28px);
+  transition:opacity .65s ease,transform .65s ease
+}
+.event.right .event-inner{transform:translateX(28px)}
+.event.visible .event-inner{opacity:1!important;transform:translateX(0)!important}
+.event.visible .event-inner:hover{box-shadow:0 10px 48px rgba(0,0,0,.65);transform:translateY(-2px)!important}
+
+.event-conn{position:absolute;top:50%;height:1px;opacity:.45;pointer-events:none}
+.event.left  .event-conn{right:-36px;width:36px;background:linear-gradient(to right,currentColor,transparent)}
+.event.right .event-conn{left:-36px; width:36px;background:linear-gradient(to left, currentColor,transparent)}
+
+.event-badge{
+  position:absolute;top:-12px;font-size:.65rem;font-weight:700;
+  letter-spacing:.15em;padding:2px 10px;border-radius:2px;text-transform:uppercase;font-family:var(--fb)
+}
+.event.left  .event-badge{right:1rem}
+.event.right .event-badge{left:1rem}
+
+.event-letter{
+  position:absolute;top:50%;width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-size:1.05rem;font-weight:900;color:#0a0a0a;transform:translateY(-50%)
+}
+.event.left  .event-letter{right:-55px}
+.event.right .event-letter{left:-55px}
+
+.event-icon{font-size:1.7rem;margin-bottom:.28rem;display:block;line-height:1}
+.event-name{font-family:var(--fd);font-size:1.08rem;font-weight:700;line-height:1.25;margin-bottom:.38rem;color:var(--cream)}
+.event-name small{font-weight:400;font-size:.85em}
+.event-age{font-size:.84rem;font-weight:600;letter-spacing:.06em;margin-bottom:.22rem}
+.event-feet{font-size:.72rem;color:rgba(245,232,204,.42);letter-spacing:.08em}
+.event-feet strong{color:var(--gold);font-weight:600}
+
+/* CATEGORY THEMES */
+.cat-geo   {--c:var(--slate);      border-color:rgba(122,142,154,.28)}
+.cat-life  {--c:var(--green-life); border-color:rgba(74,122,50,.28)}
+.cat-water {--c:var(--blue-water); border-color:rgba(42,96,128,.28)}
+.cat-ext   {--c:var(--red-extinct);border-color:rgba(184,40,32,.38)}
+.cat-human {--c:var(--gold);       border-color:rgba(232,184,48,.38)}
+.cat-era   {--c:var(--ochre);      border-color:rgba(200,136,42,.38)}
+
+.cat-geo   .event-badge{background:rgba(122,142,154,.18);color:var(--slate)}
+.cat-life  .event-badge{background:rgba(74,122,50,.18);  color:var(--green-life)}
+.cat-water .event-badge{background:rgba(42,96,128,.18);  color:var(--blue-water)}
+.cat-ext   .event-badge{background:rgba(184,40,32,.20);  color:var(--red-extinct)}
+.cat-human .event-badge{background:rgba(232,184,48,.18); color:var(--gold)}
+.cat-era   .event-badge{background:rgba(200,136,42,.18); color:var(--ochre)}
+
+.cat-geo   .event-letter{background:var(--slate)}
+.cat-life  .event-letter{background:var(--green-life)}
+.cat-water .event-letter{background:var(--blue-water)}
+.cat-ext   .event-letter{background:var(--red-extinct)}
+.cat-human .event-letter{background:var(--gold)}
+.cat-era   .event-letter{background:var(--ochre)}
+
+.cat-geo   .event-age,.cat-geo   .event-conn{color:var(--slate)}
+.cat-life  .event-age,.cat-life  .event-conn{color:var(--green-life)}
+.cat-water .event-age,.cat-water .event-conn{color:var(--blue-water)}
+.cat-ext   .event-age,.cat-ext   .event-conn{color:var(--red-extinct)}
+.cat-human .event-age,.cat-human .event-conn{color:var(--gold)}
+.cat-era   .event-age,.cat-era   .event-conn{color:var(--ochre)}
+
+.cat-geo   .spine-dot{border-color:var(--slate)}
+.cat-life  .spine-dot{border-color:var(--green-life)}
+.cat-water .spine-dot{border-color:var(--blue-water)}
+.cat-ext   .spine-dot{border-color:var(--red-extinct)}
+.cat-human .spine-dot{border-color:var(--gold)}
+.cat-era   .spine-dot{border-color:var(--ochre)}
+
+.cat-ext .event-inner::before{content:'';position:absolute;inset:0;border-radius:3px;background:rgba(184,40,32,.05);pointer-events:none}
+
+/* EON BANNERS */
+.eon-banner{
+  position:absolute;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;gap:1.8rem;
+  padding:.5rem 2rem;z-index:12;pointer-events:none
+}
+.eon-banner::before,.eon-banner::after{content:'';flex:1;height:1px;background:currentColor;opacity:.18}
+.eon-label{font-family:var(--fd);font-size:.68rem;font-weight:700;letter-spacing:.42em;text-transform:uppercase;white-space:nowrap}
+
+/* QUIET ZONE NOTES */
+.quiet-note{position:absolute;left:50%;transform:translateX(-50%);text-align:center;z-index:12;pointer-events:none;width:500px}
+.quiet-note p{font-family:var(--fd);font-style:italic;font-size:.95rem;color:rgba(245,232,204,.2);letter-spacing:.08em;line-height:1.9}
+.quiet-note .qft{font-size:.68rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(245,232,204,.1);margin-top:.5rem}
+
+/* ERA BANDS */
+.era-band{position:absolute;left:0;right:0;pointer-events:none;z-index:2}
+
+/* HUD */
+#hud{position:fixed;right:1.5rem;top:50%;transform:translateY(-50%);z-index:100;display:flex;flex-direction:column;align-items:flex-end;gap:.75rem}
+#era-label{font-family:var(--fd);font-size:.72rem;font-weight:700;color:var(--ochre);text-align:right;max-width:130px;line-height:1.3}
+#feet-counter{font-family:var(--fd);font-size:1.5rem;font-weight:900;color:var(--cream);text-align:right;line-height:1}
+#feet-unit{font-size:.62rem;color:rgba(245,232,204,.36);letter-spacing:.14em;text-align:right}
+#progress-track{width:3px;height:200px;background:rgba(245,232,204,.08);border-radius:2px;position:relative}
+#progress-fill{position:absolute;top:0;left:0;right:0;background:linear-gradient(to bottom,var(--ochre),var(--gold));border-radius:2px;height:0%;transition:height .12s}
+#progress-label{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,232,204,.36);text-align:right}
+
+/* LEGEND */
+#legend{position:fixed;bottom:1.5rem;left:1.5rem;z-index:100;background:rgba(5,13,26,.88);border:1px solid rgba(200,136,42,.18);border-radius:3px;padding:.85rem 1.1rem;backdrop-filter:blur(10px)}
+#legend h3{font-family:var(--fd);font-size:.62rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--ochre);margin-bottom:.6rem}
+.li{display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:rgba(245,232,204,.65);margin-bottom:.28rem}
+.ld{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* PRESENT DAY */
+#present-day{position:absolute;bottom:0;left:0;right:0;height:600px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:15;padding:2rem}
+#present-day::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(74,122,50,.14) 0%,transparent 70%)}
+.present-title{font-family:var(--fd);font-size:3rem;font-weight:900;color:var(--gold);margin-bottom:.5rem;position:relative}
+.present-sub{font-size:1.05rem;color:rgba(245,232,204,.58);max-width:480px;line-height:1.75;position:relative}
+.present-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;margin-top:2.2rem;position:relative}
+.stat-num{font-family:var(--fd);font-size:2.2rem;font-weight:900;line-height:1}
+.stat-label{font-size:.68rem;letter-spacing:.22em;color:rgba(245,232,204,.42);text-transform:uppercase;margin-top:.25rem}
+</style>
+</head>
+<body>
+
+<div id="starfield"></div>
+<div id="era-bg"></div>
+
+<div id="hud">
+  <div id="era-label">Hadean Eon</div>
+  <div id="feet-counter">0.00</div>
+  <div id="feet-unit">feet · 120 total</div>
+  <div id="progress-track"><div id="progress-fill"></div></div>
+  <div id="progress-label">scroll progress</div>
+</div>
+
+<div id="legend">
+  <h3>Legend</h3>
+  <div class="li"><div class="ld" style="background:var(--slate)"></div>Geological Event</div>
+  <div class="li"><div class="ld" style="background:var(--green-life)"></div>First Life / Biology</div>
+  <div class="li"><div class="ld" style="background:var(--blue-water)"></div>Ocean / Water</div>
+  <div class="li"><div class="ld" style="background:var(--red-extinct)"></div>Mass Extinction</div>
+  <div class="li"><div class="ld" style="background:var(--ochre)"></div>Era Boundary</div>
+  <div class="li"><div class="ld" style="background:var(--gold)"></div>Human Ancestors</div>
+</div>
+
+<div id="timeline">
+
+  <!-- Era background bands -->
+  <div class="era-band" style="top:0;height:47517px;background:linear-gradient(to bottom,rgba(26,8,0,0)0%,rgba(35,14,2,.30)100%)"></div>
+  <div class="era-band" style="top:47517px;height:117391px;background:linear-gradient(to bottom,rgba(40,20,6,.26)0%,rgba(52,26,8,.36)100%)"></div>
+  <div class="era-band" style="top:164908px;height:153313px;background:linear-gradient(to bottom,rgba(55,28,10,.33)0%,rgba(68,36,14,.40)100%)"></div>
+  <div class="era-band" style="top:318221px;height:43279px;background:linear-gradient(to bottom,rgba(28,42,8,.30)0%,rgba(18,38,6,.40)100%)"></div>
+
+  <div id="spine"></div>
+
+  <!-- HERO -->
+  <div id="hero">
+    <div class="hero-sub">A 4.6 Billion Year Journey</div>
+    <h1 class="hero-title">Geologic<br><em>Time</em></h1>
+    <p class="hero-desc">This page is 360,000 pixels tall — the equivalent of scrolling 120 feet. Every pixel represents roughly 12,800 years of Earth's history. Scroll down through deep time.</p>
+    <div class="hero-scale">1 foot = 3,000 px &nbsp;·&nbsp; 1 px ≈ 12,800 years &nbsp;·&nbsp; 26 events A → Z</div>
+    <div class="scroll-cue">Scroll to begin</div>
+  </div>
+
+  <!-- EON BANNERS -->
+  <div class="eon-banner" style="top:530px;color:var(--slate)">
+    <span class="eon-label" style="color:var(--slate)">Hadean Eon begins · 4.6 billion years ago</span>
+  </div>
+  <div class="eon-banner" style="top:47517px;color:var(--warm-stone)">
+    <span class="eon-label" style="color:var(--warm-stone)">Archean Eon begins · 4.0 billion years ago</span>
+  </div>
+  <div class="eon-banner" style="top:164908px;color:var(--ochre)">
+    <span class="eon-label" style="color:var(--ochre)">Proterozoic Eon begins · 2.5 billion years ago</span>
+  </div>
+  <div class="eon-banner" style="top:318221px;color:var(--green-life)">
+    <span class="eon-label" style="color:var(--green-life)">Phanerozoic Eon begins · Cambrian Explosion · 541 million years ago</span>
+  </div>
+
+  <!-- QUIET ZONE NOTES -->
+  <div class="quiet-note" style="top:170000px">
+    <p>Two billion years pass.<br>Single-celled life quietly dominates the planet.<br>The atmosphere slowly fills with oxygen.</p>
+    <p class="qft">· · · approximately 50 feet of hallway with no new events · · ·</p>
+  </div>
+  <div class="quiet-note" style="top:215000px">
+    <p>You are now 61 feet down the hallway.<br>Nothing with more than one cell has ever existed on Earth.</p>
+    <p class="qft">· · · 1.8 billion years ago · · ·</p>
+  </div>
+  <div class="quiet-note" style="top:258000px">
+    <p>Still scrolling through deep time.<br>Stromatolites build the only reefs on Earth.</p>
+    <p class="qft">· · · 1.3 billion years ago · · ·</p>
+  </div>
+
+  <!-- ═══════════ 26 EVENTS ═══════════ -->
+
+  <!-- A: Formation of Earth — top: 560px -->
+  <div class="event left cat-geo" id="ev-A" style="top:560px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Geological</div><div class="event-letter">A</div>
+      <span class="event-icon">🌍</span>
+      <div class="event-name">Formation of the Earth</div>
+      <div class="event-age">4.6 billion years ago</div>
+      <div class="event-feet"><strong>0.0 ft</strong> from start · 120 ft to present</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-geo" style="top:596px"></div>
+
+  <!-- B: Oldest known rock — 4300 Mya → 24038px -->
+  <div class="event right cat-geo" id="ev-B" style="top:24038px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Geological</div><div class="event-letter">B</div>
+      <span class="event-icon">🪨</span>
+      <div class="event-name">Oldest Known Rock</div>
+      <div class="event-age">4.3 billion years ago</div>
+      <div class="event-feet"><strong>7.8 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-geo" style="top:24074px"></div>
+
+  <!-- C: First single-celled organism — 4000 Mya → 47517px -->
+  <div class="event left cat-life" id="ev-C" style="top:47517px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">C</div>
+      <span class="event-icon">🦠</span>
+      <div class="event-name">First Single-Celled Organism</div>
+      <div class="event-age">4.0 billion years ago</div>
+      <div class="event-feet"><strong>15.7 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:47553px"></div>
+
+  <!-- D: Age of most continental crust — 3700 Mya → 70995px -->
+  <div class="event right cat-geo" id="ev-D" style="top:70995px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Geological</div><div class="event-letter">D</div>
+      <span class="event-icon">🏔️</span>
+      <div class="event-name">Age of Most Continental Crust</div>
+      <div class="event-age">3.7 billion years ago</div>
+      <div class="event-feet"><strong>23.5 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-geo" style="top:71031px"></div>
+
+  <!-- E: First viruses — 3500 Mya → 86647px -->
+  <div class="event left cat-life" id="ev-E" style="top:86647px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">E</div>
+      <span class="event-icon">⚗️</span>
+      <div class="event-name">First Viruses Appear</div>
+      <div class="event-age">3.5 billion years ago</div>
+      <div class="event-feet"><strong>28.7 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:86683px"></div>
+
+  <!-- F: Blue-green algae — 3000 Mya → 125777px -->
+  <div class="event right cat-life" id="ev-F" style="top:125777px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">F</div>
+      <span class="event-icon">🌿</span>
+      <div class="event-name">Blue-Green Algae<br><small>(First Oxygen Producers)</small></div>
+      <div class="event-age">3.0 billion years ago</div>
+      <div class="event-feet"><strong>41.8 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:125813px"></div>
+
+  <!-- G: First fungi — 1000 Mya → 282299px -->
+  <div class="event left cat-life" id="ev-G" style="top:282299px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">G</div>
+      <span class="event-icon">🍄</span>
+      <div class="event-name">First Fungi Appear</div>
+      <div class="event-age">1.0 billion years ago</div>
+      <div class="event-feet"><strong>93.5 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:282335px"></div>
+
+  <!-- H: First multi-celled — 700 Mya → 305777px -->
+  <div class="event right cat-life" id="ev-H" style="top:305777px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">H</div>
+      <span class="event-icon">🔬</span>
+      <div class="event-name">First Multi-Celled Organism</div>
+      <div class="event-age">700 million years ago</div>
+      <div class="event-feet"><strong>101.3 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:305813px"></div>
+
+  <!-- I: Precambrian Extinction — 650 Mya → 309690px -->
+  <div class="event left cat-ext" id="ev-I" style="top:309690px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">⚠ Mass Extinction</div><div class="event-letter">I</div>
+      <span class="event-icon">💀</span>
+      <div class="event-name">Precambrian Extinction<br><small>70% of all life wiped out</small></div>
+      <div class="event-age">650 million years ago</div>
+      <div class="event-feet"><strong>102.6 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-ext" style="top:309726px"></div>
+
+  <!-- J: First shellfish — 570 Mya → 315951px -->
+  <div class="event right cat-water" id="ev-J" style="top:315951px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Ocean Life</div><div class="event-letter">J</div>
+      <span class="event-icon">🐚</span>
+      <div class="event-name">First Shellfish Appear</div>
+      <div class="event-age">570 million years ago</div>
+      <div class="event-feet"><strong>104.7 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-water" style="top:315987px"></div>
+
+  <!-- K: First fish — 510 Mya → 320647px -->
+  <div class="event left cat-water" id="ev-K" style="top:320647px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Ocean Life</div><div class="event-letter">K</div>
+      <span class="event-icon">🐟</span>
+      <div class="event-name">First Fish Appear</div>
+      <div class="event-age">510 million years ago</div>
+      <div class="event-feet"><strong>106.3 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-water" style="top:320683px"></div>
+
+  <!-- L: First true plants — 498 Mya → 321586px -->
+  <div class="event right cat-life" id="ev-L" style="top:321586px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">L</div>
+      <span class="event-icon">🌱</span>
+      <div class="event-name">First True Plants Appear</div>
+      <div class="event-age">498 million years ago</div>
+      <div class="event-feet"><strong>106.6 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:321622px"></div>
+
+  <!-- M: First sharks — 390 Mya → 330038px -->
+  <div class="event left cat-water" id="ev-M" style="top:330038px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Ocean Life</div><div class="event-letter">M</div>
+      <span class="event-icon">🦈</span>
+      <div class="event-name">First Sharks Appear</div>
+      <div class="event-age">390 million years ago</div>
+      <div class="event-feet"><strong>109.5 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-water" style="top:330074px"></div>
+
+  <!-- N: First amphibians — 375 Mya → 331212px -->
+  <div class="event right cat-life" id="ev-N" style="top:331212px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">N</div>
+      <span class="event-icon">🐸</span>
+      <div class="event-name">First Amphibians Appear</div>
+      <div class="event-age">375 million years ago</div>
+      <div class="event-feet"><strong>109.9 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:331248px"></div>
+
+  <!-- O: First reptile — 325 Mya → 335125px -->
+  <div class="event left cat-life" id="ev-O" style="top:335125px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">O</div>
+      <span class="event-icon">🦎</span>
+      <div class="event-name">First Reptile Appears</div>
+      <div class="event-age">325 million years ago</div>
+      <div class="event-feet"><strong>111.2 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:335161px"></div>
+
+  <!-- P: Permian-Triassic Extinction — 250 Mya → 340995px -->
+  <div class="event right cat-ext" id="ev-P" style="top:340995px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">⚠ Mass Extinction</div><div class="event-letter">P</div>
+      <span class="event-icon">☄️</span>
+      <div class="event-name">Permian-Triassic Extinction<br><small>99% of all life wiped out</small></div>
+      <div class="event-age">250 million years ago</div>
+      <div class="event-feet"><strong>113.1 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-ext" style="top:341031px"></div>
+
+  <!-- Q: Mesozoic Era — 245 Mya → 341386px -->
+  <div class="event left cat-era" id="ev-Q" style="top:341386px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Era Boundary</div><div class="event-letter">Q</div>
+      <span class="event-icon">🦕</span>
+      <div class="event-name">Mesozoic Era Begins<br><small>Age of the Dinosaurs</small></div>
+      <div class="event-age">245 million years ago</div>
+      <div class="event-feet"><strong>113.2 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-era" style="top:341422px"></div>
+
+  <!-- R: First mammal — 200 Mya → 344908px -->
+  <div class="event right cat-life" id="ev-R" style="top:344908px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">R</div>
+      <span class="event-icon">🐾</span>
+      <div class="event-name">First Mammal Appears</div>
+      <div class="event-age">200 million years ago</div>
+      <div class="event-feet"><strong>114.4 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:344944px"></div>
+
+  <!-- S: Age of most oceanic crust — 180 Mya → 346473px -->
+  <div class="event left cat-water" id="ev-S" style="top:346473px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Ocean / Geology</div><div class="event-letter">S</div>
+      <span class="event-icon">🌊</span>
+      <div class="event-name">Age of Most Oceanic Crust</div>
+      <div class="event-age">180 million years ago</div>
+      <div class="event-feet"><strong>114.9 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-water" style="top:346509px"></div>
+
+  <!-- T: First known bird — 160 Mya → 348038px -->
+  <div class="event right cat-life" id="ev-T" style="top:348038px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">First Life</div><div class="event-letter">T</div>
+      <span class="event-icon">🐦</span>
+      <div class="event-name">First Known Bird Appears</div>
+      <div class="event-age">160 million years ago</div>
+      <div class="event-feet"><strong>115.4 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-life" style="top:348074px"></div>
+
+  <!-- U: Rocky Mountains — 80 Mya → 354299px -->
+  <div class="event left cat-geo" id="ev-U" style="top:354299px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Geological</div><div class="event-letter">U</div>
+      <span class="event-icon">⛰️</span>
+      <div class="event-name">Rocky Mountains Formed</div>
+      <div class="event-age">80 million years ago</div>
+      <div class="event-feet"><strong>117.5 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-geo" style="top:354335px"></div>
+
+  <!-- V: Extinction of dinosaurs — 65 Mya → 355473px -->
+  <div class="event right cat-ext" id="ev-V" style="top:355473px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">⚠ Mass Extinction</div><div class="event-letter">V</div>
+      <span class="event-icon">☄️</span>
+      <div class="event-name">Extinction of the Dinosaurs</div>
+      <div class="event-age">65 million years ago</div>
+      <div class="event-feet"><strong>117.9 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-ext" style="top:355509px"></div>
+
+  <!-- Compression note -->
+  <div class="eon-banner" style="top:357600px;color:rgba(232,184,48,.32)">
+    <span class="eon-label" style="color:rgba(232,184,48,.38);font-size:.6rem;letter-spacing:.35em">
+      On the physical hallway, W · X · Y · Z all fall within the final 1/10th of one inch
+    </span>
+  </div>
+
+  <!-- W: First proto-humans — spread to 358200px -->
+  <div class="event left cat-human" id="ev-W" style="top:358200px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Human Ancestors</div><div class="event-letter">W</div>
+      <span class="event-icon">🐒</span>
+      <div class="event-name">First Proto-Humans Appear</div>
+      <div class="event-age">3.5 million years ago</div>
+      <div class="event-feet"><strong>119.91 ft</strong> · only ~1 inch from end on hallway</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-human" style="top:358236px"></div>
+
+  <!-- X: Earliest modern humans — 358800px -->
+  <div class="event right cat-human" id="ev-X" style="top:358800px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Human Ancestors</div><div class="event-letter">X</div>
+      <span class="event-icon">🧑</span>
+      <div class="event-name">Earliest Modern Humans</div>
+      <div class="event-age">2 million years ago</div>
+      <div class="event-feet"><strong>119.95 ft</strong> from start</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-human" style="top:358836px"></div>
+
+  <!-- Y: Last Ice Age — 359400px -->
+  <div class="event left cat-water" id="ev-Y" style="top:359400px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Climate Event</div><div class="event-letter">Y</div>
+      <span class="event-icon">🧊</span>
+      <div class="event-name">Last Ice Age</div>
+      <div class="event-age">20,000 years ago</div>
+      <div class="event-feet"><strong>≈ 120.0 ft</strong> · 0.006 in from end on hallway</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-water" style="top:359436px"></div>
+
+  <!-- Z: Recorded human history — 360000px -->
+  <div class="event right cat-human" id="ev-Z" style="top:360000px">
+    <div class="event-inner">
+      <div class="event-conn"></div><div class="event-badge">Human History</div><div class="event-letter">Z</div>
+      <span class="event-icon">📜</span>
+      <div class="event-name">Recorded Human History Begins</div>
+      <div class="event-age">10,000 years ago</div>
+      <div class="event-feet"><strong>≈ 120.0 ft</strong> · 0.003 in from end on hallway</div>
+    </div>
+  </div>
+  <div class="spine-dot cat-human" style="top:360036px"></div>
+
+  <!-- PRESENT DAY -->
+  <div id="present-day">
+    <div style="font-size:.78rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;opacity:.75;position:relative">End of the Journey</div>
+    <div class="present-title">Present Day</div>
+    <p class="present-sub">You have scrolled 120 feet — 4.6 billion years of Earth's history. All of recorded human civilization fits within the last 0.003 inches of this hallway.</p>
+    <div class="present-stats">
+      <div class="stat-item"><div class="stat-num" style="color:var(--gold)">120</div><div class="stat-label">Feet scrolled</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--ochre)">4.6B</div><div class="stat-label">Years of history</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--green-life)">26</div><div class="stat-label">Events A → Z</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--slate)">3</div><div class="stat-label">Mass extinctions</div></div>
+    </div>
+  </div>
+
+</div><!-- #timeline -->
+
+<script>
+// STARFIELD
+(function(){
+  const sf = document.getElementById('starfield');
+  for(let i=0;i<220;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const sz = Math.random()*2.2+0.4;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--o:${(Math.random()*.45+.15).toFixed(2)};--d:${(Math.random()*4+2).toFixed(1)}s;animation-delay:${(Math.random()*5).toFixed(1)}s`;
+    sf.appendChild(s);
+  }
+})();
+
+// SCROLL
+const pf = document.getElementById('progress-fill');
+const fc = document.getElementById('feet-counter');
+const el = document.getElementById('era-label');
+const eb = document.getElementById('era-bg');
+
+const ERAS=[
+  [0,14.6,'Hadean Eon','radial-gradient(ellipse at center top,rgba(70,20,0,.65) 0%,transparent 80%)'],
+  [14.6,67.9,'Archean Eon','radial-gradient(ellipse at center top,rgba(90,38,6,.55) 0%,transparent 80%)'],
+  [67.9,109.9,'Proterozoic Eon','radial-gradient(ellipse at center top,rgba(110,55,18,.45) 0%,transparent 80%)'],
+  [109.9,120,'Phanerozoic Eon','radial-gradient(ellipse at center top,rgba(32,68,12,.48) 0%,transparent 80%)'],
+];
+
+function getEra(ft){return ERAS.find(e=>ft>=e[0]&&ft<=e[1])||ERAS[3]}
+
+// IntersectionObserver for card reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.08,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.event').forEach(ev=>obs.observe(ev));
+
+let lastEra='';
+function onScroll(){
+  const sy=window.scrollY;
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  const prog=Math.min(Math.max(sy/max,0),1);
+  const ft=prog*120;
+  pf.style.height=(prog*100)+'%';
+  fc.textContent=ft.toFixed(2);
+  const era=getEra(ft);
+  if(era[2]!==lastEra){lastEra=era[2];el.textContent=era[2];eb.style.background=era[3]}
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Home')window.scrollTo({top:0,behavior:'smooth'});
+  if(e.key==='End')window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+});
+</script>
+</body>
+</html>
