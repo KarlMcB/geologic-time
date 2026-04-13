@@ -1,0 +1,9 @@
+type,age_years,text,color
+eon_banner,4600000000,Hadean Eon begins · 4.6 billion years ago,#7a8e9a
+eon_banner,4000000000,Archean Eon begins · 4.0 billion years ago,#8b6040
+eon_banner,2500000000,Proterozoic Eon begins · 2.5 billion years ago,#c8882a
+eon_banner,541000000,Phanerozoic Eon begins · Cambrian Explosion · 541 million years ago,#4a7a32
+quiet_note,1800000000,Two billion years pass.|Single-celled life quietly dominates the planet.|The atmosphere slowly fills with oxygen.|· · · approximately 50 feet of hallway with no new events · · ·,
+quiet_note,1400000000,You are now 61 feet down the hallway.|Nothing with more than one cell has ever existed on Earth.,
+quiet_note,1000000000,Still scrolling through deep time.|Stromatolites build the only reefs on Earth.,
+quiet_note,70000000,On the physical hallway · W · X · Y · Z all fall within the final 1/10th of one inch,#e8b830
